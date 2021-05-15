@@ -24,12 +24,23 @@ class StocksViewModel: ObservableObject {
 
 struct ContentView: View {
     @StateObject var viewModel = StocksViewModel()
+    @State var text = ""
     
     var body: some View {
         NavigationView {
             VStack {
                 Section(header: Text("Add New Stock")) {
-                    TextField("CompanyName")
+                    TextField("Company Name", text: $text)
+                        .padding()
+                    Button(action: {
+                        self.tryToAddToList()
+                    }, label: {
+                        Text("Add to List")
+                            .frame(width: 250, height: 50, alignment: .center)
+                            .background(Color.green)
+                            .cornerRadius(8)
+                            .foregroundColor(Color.white)
+                    })
                 }
                 List {
                     ForEach(viewModel.stocks) { stock in
@@ -39,6 +50,15 @@ struct ContentView: View {
             }
             .navigationTitle("Stocks")
         }
+    }
+    
+    func tryToAddToList() {
+        guard !text.trimmingCharacters(in: .whitespaces).isEmpty else {
+            return
+        }
+        let newStock = Stock(title: text)
+        viewModel.stocks.append(newStock)
+        text = ""
     }
 }
 
